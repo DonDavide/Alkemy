@@ -2,33 +2,87 @@ const db = require("../database/models");
 const Op = db.Sequelize.Op;
 
 var APIController = {
-    users : (req, res, next) => { 
+    usersLogin : (req, res, next) => { 
+        console.log(req.body);
     db.User.findOne({
         where : {
-            email : "daviddonati730@gmail.com",
-            password : "contraseña123"
+            email : req.body.user,
+            password : req.body.password
         }
     })
     .then( (result)=>{
+        if(result==null){
+            let respuesta={
+                
+                    meta:{
+                        status : 200,
+                        state : false,
+                        url : "/api/users",
+                        message : "Invalid username or password"                
+                    },
+                    data : result
+            }
+            console.log(respuesta);
+            res.json(respuesta)   
+        }else{
         let respuesta = {
             meta:{
                 status : 200,
-                state : "OK",
+                state : true,
                 total : result.length,
-                url : "/api/operations"                
+                url : "/api/operations",
+                message : "OK"                
             },
             data : result
         }
-        res.json(respuesta) 
+        res.json(respuesta)
+        console.log(respuesta);} 
     }).catch(function(error){
         console.log(error);
     })
     },
-    usersPost : (req, res, next) => {
-        res.send('users')
+    usersLoginNew : (req, res, next) => { 
+        console.log(req.body);
+    db.User.findOne({
+        where : {
+            email : req.body.mailNewUser,
+            password : req.body.passwordNewUser
+        }
+    })
+    .then( (result)=>{
+        if(result==null){
+            let respuesta={
+                
+                    meta:{
+                        status : 200,
+                        state : false,
+                        url : "/api/users",
+                        message : "Invalid username or password"                
+                    },
+                    data : result
+            }
+            console.log(respuesta);
+            res.json(respuesta)   
+        }else{
+        let respuesta = {
+            meta:{
+                status : 200,
+                state : true,
+                total : result.length,
+                url : "/api/operations",
+                message : "OK"                
+            },
+            data : result
+        }
+        res.json(respuesta)
+        console.log(respuesta);} 
+    }).catch(function(error){
+        console.log(error);
+    })
     },
+
     operations : (req, res, next) => { 
-        idUser = 1;
+        idUser = req.params.id;
         
         let showIncome = db.Operation.findAll({where : {userId : idUser, type : "Income"} });
         let showEgress = db.Operation.findAll({where : {userId : idUser, type : "Egress"} });
@@ -60,8 +114,7 @@ var APIController = {
         })
     },
     operationsPost : (req, res, next) => { 
-        var idUser = req.params.id
-        idUser = 1;
+        var idUser = req.body.idUser;
         
         let showIncome = db.Operation.findAll({where : {userId : idUser, type : "Income"} });
         let showEgress = db.Operation.findAll({where : {userId : idUser, type : "Egress"} });
@@ -114,7 +167,7 @@ var APIController = {
         })
     },
     operationsDestroy : (req, res, next) => {
-        console.log("se borro");
+        console.log("Daleted");
         next()
     }
 }

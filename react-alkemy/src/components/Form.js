@@ -20,7 +20,7 @@ class Form extends Component {
             operations: [],
             totalIncome: 0,
             totalEgress: 0,
-            idUser:1,
+            idUser: props.idUser,
             idProduct:"",
             conceptEdit: "",
             amounEdit: "",
@@ -53,7 +53,8 @@ class Form extends Component {
           message : "All fields on this form are required"
       })
       }else{
-        window.fetch("http://localhost:3000/api/operations/1", {
+        
+        fetch("http://localhost:3000/api/operations/"+ this.state.idUser, {
         method: 'POST',
         body: JSON.stringify(this.state),
         headers:{
@@ -68,7 +69,14 @@ class Form extends Component {
             .catch(error => console.error('Error:', error))
             .then(() => console.log('Success:', this.state));
             
-        }}
+            this.setState({
+              message : "",
+              categoryId : "",
+              concept : "",
+              date : "",
+              amount : "",
+              type : "",
+          });}}
     update(e){
       if(this.state.categoryId == ""||
       this.state.concept == ""||
@@ -90,7 +98,8 @@ class Form extends Component {
                   concept : "",
                   date : "",
                   amount : "",
-                  type : "",})
+                  type : "",
+                  message :""})
                 console.log(this.state.operations);
             })
             .catch(error => console.error('Error:', error))
@@ -99,7 +108,13 @@ class Form extends Component {
         }}
       delete(e){
         var idDelete=(e.target.value);
-        fetch("http://localhost:3000/api/delete/"+ idDelete, )
+        fetch("http://localhost:3000/api/delete/"+ idDelete, {
+          method: 'POST',
+          body: JSON.stringify(this.state),
+          headers:{
+            'Content-Type': 'application/json'
+          }
+          })
         .then(res => res.json())
             .then(response=>{
                 this.setState({operations : response.data, totalEgress: response.meta.totalEgress,
@@ -122,7 +137,7 @@ class Form extends Component {
         })
         .catch(function(error){console.log(error)})
 
-        fetch('http://localhost:3000/api/operations/1')
+        fetch('http://localhost:3000/api/operations/'+ this.state.idUser)
         .then(response =>{
                 return response.json();
         })
@@ -144,7 +159,6 @@ class Form extends Component {
         categories=this.state.categories;
         totalIncome = this.state.totalIncome;
         totalEgress = this.state.totalEgress;
-        this.state.edit === true ? console.log("es verdadero"):console.log("es falso")
     return (        
 <div>
 {this.state.edit ==0 ? <div>
